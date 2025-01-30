@@ -1,14 +1,14 @@
 import redisClient from '@/core/redis-client/redis-client';
-import { BuyGoodInput, DBGood, GetGoodsInput, Item, ItemPrices } from '@/resources/goods/goods.types';
-import { GOODS_CASH_REDIS_EXPIRING_PERIOD_IN_SEC, GOODS_CASH_REDIS_PREFIX } from '@/resources/goods/goods.constant';
+import { BuyProductInput, DBProduct, GetProductsInput, Item, ItemPrices } from '@/resources/products/products.types';
+import { PRODUCTS_CASH_REDIS_EXPIRING_PERIOD_IN_SEC, PRODUCTS_CASH_REDIS_PREFIX } from '@/resources/products/products.constant';
 import { SkinportApiClientInterface } from '@/core/skinport-api-client/skinport-api-client.types';
 import sql from '@/core/db-client/postgres-js-client';
 
-export class GoodsService {
+export class ProductsService {
   constructor(private readonly apiClient: SkinportApiClientInterface) {
   }
 
-  public async getGoods(params: GetGoodsInput) {
+  public async getProducts(params: GetProductsInput) {
     try {
       const { minPrice, maxPrice, page = 1, limit = 100, tradable } = params;
 
@@ -16,14 +16,14 @@ export class GoodsService {
       const minPriceKey = minPrice && `:minPrice_${minPrice}` || '';
       const maxPriceKey = maxPrice && `:maxPrice_${maxPrice}` || '';
 
-      const redisGoodsDataCashKey =
-        `${GOODS_CASH_REDIS_PREFIX}${minPriceKey}${maxPriceKey}:page_${page}:limit_${limit}:tradable_${String(tradable)}`;
+      const redisProductsDataCashKey =
+        `${PRODUCTS_CASH_REDIS_PREFIX}${minPriceKey}${maxPriceKey}:page_${page}:limit_${limit}:tradable_${String(tradable)}`;
 
-      const goodsDataCash =
-        (await redisClient.hgetall(redisGoodsDataCashKey)) || undefined;
+      const productsDataCash =
+        (await redisClient.hgetall(redisProductsDataCashKey)) || undefined;
 
-      if (goodsDataCash?.data) {
-        return { data: JSON.parse(goodsDataCash.data) }
+      if (productsDataCash?.data) {
+        return { data: JSON.parse(productsDataCash.data) }
       }
 
       const tradableFilter = tradable ? '?tradable=true' : '?tradable=false';
@@ -68,10 +68,10 @@ export class GoodsService {
         data: resultData,
       }
 
-      await redisClient.hset(redisGoodsDataCashKey, { data: JSON.stringify(responseData) });
+      await redisClient.hset(redisProductsDataCashKey, { data: JSON.stringify(responseData) });
       await redisClient.expire(
-        redisGoodsDataCashKey,
-        GOODS_CASH_REDIS_EXPIRING_PERIOD_IN_SEC,
+        redisProductsDataCashKey,
+        PRODUCTS_CASH_REDIS_EXPIRING_PERIOD_IN_SEC,
       );
 
       return { data: responseData };
@@ -85,12 +85,12 @@ export class GoodsService {
    *
    * @param params
    */
-  public async buyGood(params: BuyGoodInput) {
+  public async buyGood(params: BuyProductInput) {
     const { userId, goodUid } = params;
 
     const [good] = await sql`SELECT *
                              FROM products
-                             WHERE uid = ${goodUid}` as [DBGood];
+                             WHERE uid = ${goodUid}` as [DBProduct];
 
     if (!good) {
       return {

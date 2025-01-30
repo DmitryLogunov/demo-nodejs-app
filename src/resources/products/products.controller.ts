@@ -2,22 +2,22 @@ import { NextFunction, Request, Response, Router } from 'express';
 
 import authenticate from '@/core/auth/authenticate.middleware';
 import { SkinportApiClient } from '@/core/skinport-api-client/skinport-api-client';
-import { GoodsService } from '@/resources/goods/goods.service';
+import { ProductsService } from '@/resources/products/products.service';
 import { DBUser } from '@/resources/users/users.types';
 
 const apiClient = new SkinportApiClient();
-const goodsService = new GoodsService(apiClient);
+const productsService = new ProductsService(apiClient);
 
 const router = Router();
 
 /**
- * Get goods list: task 2
+ * Get products list: task 2
  *
  * @auth none
- * @route {GET} /goods
- * @returns goods from https://api.skinport.com/v1/items
+ * @route {GET} /products
+ * @returns products from https://api.skinport.com/v1/items
  */
-router.get('/goods', async (
+router.get('/products', async (
   req: Request, res: Response,next: NextFunction
 ) => {
   try {
@@ -29,7 +29,7 @@ router.get('/goods', async (
     const limitApply = parseInt(String(limit || 100));
     const tradableApply = !!tradable;
 
-    const { data } = await goodsService.getGoods({
+    const { data } = await productsService.getProducts({
       minPrice: minPriceApply,
       maxPrice: maxPriceApply,
       page: pageApply,
@@ -47,13 +47,13 @@ router.get('/goods', async (
  * Buy good: task 3
  *
  * @auth required
- * @route {POST} /goods/buy
+ * @route {POST} /products/buy
  */
-router.post('/goods/buy', authenticate, async (
+router.post('/products/buy', authenticate, async (
   req: Request & { auth?: { user: DBUser }}, res: Response, next: NextFunction
 ) => {
   try {
-    const { status, httpCode, info, data } = await goodsService.buyGood({
+    const { status, httpCode, info, data } = await productsService.buyGood({
       userId: req.auth!.user.id,
       goodUid: req.body.goodUid,
     })

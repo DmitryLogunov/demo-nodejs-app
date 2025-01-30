@@ -1,4 +1,4 @@
-export type GetGoodsInput = {
+export type GetProductsInput = {
   minPrice?: number;
   maxPrice?: number;
   page?: number;
@@ -6,7 +6,7 @@ export type GetGoodsInput = {
   tradable?: boolean;
 }
 
-export type GetGoodsResponse = {
+export type GetProductsResponse = {
   status?: 'SUCCESS' | 'ERROR';
   info?: string;
   data?: {
@@ -41,12 +41,12 @@ export type ItemPrices = {
   median_price: number;
 }
 
-export type BuyGoodInput = {
+export type BuyProductInput = {
   userId: number;
   goodUid: string;
 }
 
-export type DBGood = {
+export type DBProduct = {
   id: number;
   uid: string;
   currency: string;

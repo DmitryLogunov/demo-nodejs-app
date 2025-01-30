@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import usersController from '@/resources/users/users.controller';
-import goodsController from '@/resources/goods/goods.controller';
+import goodsController from '@/resources/products/products.controller';
 
 const api = Router()
   .use(usersController)

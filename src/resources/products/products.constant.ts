@@ -1,0 +1,2 @@
+export const PRODUCTS_CASH_REDIS_PREFIX = 'goods_cash';
+export const PRODUCTS_CASH_REDIS_EXPIRING_PERIOD_IN_SEC = 300;
