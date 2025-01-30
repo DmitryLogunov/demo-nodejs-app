@@ -89,7 +89,7 @@ export class GoodsService {
     const { userId, goodUid } = params;
 
     const [good] = await sql`SELECT *
-                             FROM goods
+                             FROM products
                              WHERE uid = ${goodUid}` as [DBGood];
 
     if (!good) {
@@ -138,7 +138,7 @@ export class GoodsService {
         `;
 
         await sql`
-            UPDATE goods
+            UPDATE products
             SET ${sql({ remaining: good.remaining - 1 }, ['remaining'])}
             WHERE id = ${good.id}
         `;
