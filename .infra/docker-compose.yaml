@@ -1,13 +1,31 @@
 version: '3.8'
 services:
-  cache:
+  redis:
     image: redis:6.2-alpine
     restart: always
     ports:
       - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    command: redis-server --save 20 1 --loglevel warning --requirepass secret
     volumes:
-      - cache:/data
+      - redis-cache:/data
+
+  postgres:
+    image: 'postgres:12.5-alpine'
+    hostname: postgres
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - PGDATA=/data/postgres
+      - POSTGRES_DB=db-name
+      - POSTGRES_USER=user
+    volumes:
+      - ./init-data/postgres-initialization.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init-data/init:/docker-entrypoint-initdb.d/init
+      - postgres:/data/postgres
+    ports:
+      - '5432:5432'
+
 volumes:
-  cache:
+  redis-cache:
+    driver: local
+  postgres:
     driver: local

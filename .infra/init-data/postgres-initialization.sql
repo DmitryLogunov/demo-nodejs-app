@@ -1,10 +1,9 @@
 CREATE ROLE "user" LOGIN PASSWORD 'p@ssword';
 
-CREATE DATABASE "data-loana-db"
+CREATE DATABASE "db-name"
     WITH
     OWNER = "user"
-    ENCODING = "UTF8"
-    CONNECTION LIMIT = -1;
+    ENCODING = "UTF8";
 
-GRANT ALL PRIVILEGES ON DATABASE "data-loana-db" TO "user";
+GRANT ALL PRIVILEGES ON DATABASE "db-name" TO "user";
 

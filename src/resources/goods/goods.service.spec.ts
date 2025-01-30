@@ -1,15 +1,18 @@
-import { UsersService } from '@/resources/users/users.service';
-import { UserRegisterInput } from '@/resources/users/users.types';
+import { GoodsService } from './goods.service';
+import { GetGoodsInput } from "@/resources/goods/goods.types";
+import { SkinportApiClient } from '@/core/skinport-api-client/skinport-api-client';
 
-describe('UsersService', () => {
-  it('create user', async () => {
+
+describe('GoodsService', () => {
+  it('getGoods', async () => {
+    const apiClient = new SkinportApiClient();
+    const goodsService = new GoodsService(apiClient);
+
     const response =
-      await UsersService.createUser({ email: undefined, password: undefined } as unknown as UserRegisterInput);
+      await goodsService.getGoods({} as unknown as GetGoodsInput);
 
-    expect(response.status).toBe('ERROR');
-    expect(response.httpCode).toBe(400);
-    expect(response.info).toMatch(/user input validation error/);
+    expect(response.data).toBeDefined();
   })
 
-  //TODO: add unit tests for methods: createUser(), login(), logout(), updateUserPassword()
+  //TODO: increase unit tests coverage for methods: getGoods(), buyGood()
 })

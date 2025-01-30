@@ -1,6 +1,9 @@
 import * as bcrypt from 'bcryptjs';
-import sql from '../../core/db-client/postgres-js-client';
-import generateToken from '../../core/auth/tokens.utils';
+
+import sql from '@/core/db-client/postgres-js-client';
+import generateToken from '@/core/auth/tokens.utils';
+import redisClient from '@/core/redis-client/redis-client';
+
 import {
   DBUser,
   UserChangePasswordResponse,
@@ -10,11 +13,11 @@ import {
   UserRegisterResponse
 } from './users.types';
 import {
+  INITIAL_USERS_BALANCE,
   NOT_UNIQUE_USER_DB_ERROR,
   USERS_SESSIONS_REDIS_EXPIRING_PERIOD_IN_SEC,
   USERS_SESSIONS_REDIS_PREFIX
 } from './users.constants';
-import redisClient from '../../core/redis-client/redis-client';
 
 export class UsersService {
   /**
@@ -39,8 +42,7 @@ export class UsersService {
 
     try {
       if (!username) {
-        const [{count: usersCount}] = await sql`SELECT COUNT(*) as count
-                                                FROM users`;
+        const [{count: usersCount}] = await sql`SELECT COUNT(*) as count FROM users`;
         username = `user_${parseInt(usersCount) + 1}`;
       }
 
@@ -51,6 +53,12 @@ export class UsersService {
       const [user] = await sql`SELECT *
                                FROM users
                                WHERE email = ${email}`;
+
+      await sql`INSERT INTO wallets ${sql([{
+        user_id: user.id,
+        currency: 'EUR', 
+        balance: INITIAL_USERS_BALANCE,
+      }])}`;
 
       delete user.password_hash;
 
@@ -148,6 +156,28 @@ export class UsersService {
       data: {user, token},
     };
   };
+
+  /**
+   * Logout: drops user's session
+   *
+   * @param email
+   */
+  static async logout(email: string): Promise<void> {
+    const redisUserSessionByEmailKey = `${USERS_SESSIONS_REDIS_PREFIX}:${email}`;
+
+    const userSession =
+      (await redisClient.hgetall(redisUserSessionByEmailKey)) || undefined;
+
+    if (!userSession.token) {
+      return;
+    }
+
+    const redisUserSessionByTokenKey = `${USERS_SESSIONS_REDIS_PREFIX}:${userSession.token}`;
+
+
+    await redisClient.del(redisUserSessionByTokenKey);
+    await redisClient.del(redisUserSessionByEmailKey);
+  }
 
   /**
    * Changes user's password
