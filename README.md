@@ -29,3 +29,5 @@
 The last version of postman collection with demo of API requests is in .infra/postman_collection.json
 
 ![img.png](.infra/img.png)
+
+
