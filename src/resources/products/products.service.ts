@@ -88,11 +88,11 @@ export class ProductsService {
   public async buyGood(params: BuyProductInput) {
     const { userId, goodUid } = params;
 
-    const [good] = await sql`SELECT *
+    const [product] = await sql`SELECT *
                              FROM products
                              WHERE uid = ${goodUid}` as [DBProduct];
 
-    if (!good) {
+    if (!product) {
       return {
         status: 'ERROR',
         httpCode: 400,
@@ -100,7 +100,7 @@ export class ProductsService {
       }
     }
 
-    if (!good.available || good.remaining === 0) {
+    if (!product.available || product.remaining === 0) {
       return {
         status: 'ERROR',
         httpCode: 400,
@@ -111,17 +111,17 @@ export class ProductsService {
     const [userWallet] = await sql`SELECT *
                                    FROM wallets
                                    WHERE user_id = ${userId}
-                                     AND currency = ${good.currency}` as [{ id: number; balance: number }];
+                                     AND currency = ${product.currency}` as [{ id: number; balance: number }];
 
     if (!userWallet) {
       return {
         status: 'ERROR',
         httpCode: 400,
-        info: `user has no wallet in ${good.currency}`
+        info: `user has no wallet in ${product.currency}`
       }
     }
 
-    if (userWallet.balance < good.price) {
+    if (userWallet.balance < product.price) {
       return {
         status: 'ERROR',
         httpCode: 400,
@@ -133,26 +133,26 @@ export class ProductsService {
       await sql.begin(async sql => {
         await sql`
             UPDATE wallets
-            SET ${sql({ balance: userWallet.balance - good.price }, ['balance'])}
+            SET ${sql({ balance: userWallet.balance - product.price }, ['balance'])}
             WHERE id = ${userWallet.id}
         `;
 
         await sql`
             UPDATE products
-            SET ${sql({ remaining: good.remaining - 1 }, ['remaining'])}
-            WHERE id = ${good.id}
+            SET ${sql({ remaining: product.remaining - 1 }, ['remaining'])}
+            WHERE id = ${product.id}
         `;
 
         await sql`INSERT INTO users_purchases ${sql([{
           user_id: userId,
-          good_id: good.id,
+          product_id: product.id,
         }])}`;
       });
 
       const [refreshedUserWallet] = await sql`SELECT *
                                    FROM wallets
                                    WHERE user_id = ${userId}
-                                     AND currency = ${good.currency}` as [{ id: number; balance: number; currency: string }];
+                                     AND currency = ${product.currency}` as [{ id: number; balance: number; currency: string }];
 
       return {
         status: 'SUCCESS',
