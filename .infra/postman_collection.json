@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user\": {\n       \"email\": \"test.554@email.com\",\n       \"password\": \"p@ssword\" \n    }\n}",
+							"raw": "{\n    \"user\": {\n       \"email\": \"test.123@email.com\",\n       \"password\": \"p@ssword\" \n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,12 +24,11 @@
 							}
 						},
 						"url": {
-							"raw": "{{apiUrl}}/api/users",
+							"raw": "{{apiUrl}}/users",
 							"host": [
 								"{{apiUrl}}"
 							],
 							"path": [
-								"api",
 								"users"
 							]
 						}
@@ -43,7 +42,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user\": {\n       \"email\": \"test.657@email.com\",\n       \"password\": \"p@ssword\" \n    }\n}",
+							"raw": "{\n    \"user\": {\n       \"email\": \"test.123@email.com\",\n       \"password\": \"p@ssword\" \n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -94,7 +93,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer 4754a1f387b78f8b68645f6f5063c0f3",
+								"value": "Bearer 40b45cbaacd8447403bc9533e857cc8f",
 								"type": "text"
 							}
 						],
@@ -146,20 +145,20 @@
 			]
 		},
 		{
-			"name": "goods",
+			"name": "products",
 			"item": [
 				{
-					"name": "get-goods",
+					"name": "get-products",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{apiUrl}}/goods?tradable=true&page=2&limit=100",
+							"raw": "{{apiUrl}}/products?tradable=true&page=2&limit=100",
 							"host": [
 								"{{apiUrl}}"
 							],
 							"path": [
-								"goods"
+								"products"
 							],
 							"query": [
 								{
@@ -180,7 +179,7 @@
 					"response": []
 				},
 				{
-					"name": "buy-goods",
+					"name": "buy-products",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -192,7 +191,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"goodUid\": \"1st-lieutenant-farlow-swat\"\n}",
+							"raw": "{\n    \"goodUid\": \"2021-community-sticker-capsule\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -200,12 +199,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{apiUrl}}/goods/buy",
+							"raw": "{{apiUrl}}/products/buy",
 							"host": [
 								"{{apiUrl}}"
 							],
 							"path": [
-								"goods",
+								"products",
 								"buy"
 							]
 						}
