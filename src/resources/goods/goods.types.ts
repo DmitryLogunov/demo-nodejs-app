@@ -1,5 +1,3 @@
-import { ServiceHandlerResponse } from '@/core/types';
-
 export type GetGoodsInput = {
   minPrice?: number;
   maxPrice?: number;
